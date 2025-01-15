@@ -1,0 +1,62 @@
+<?php
+
+//Exit if accessed directly
+if(!defined('ABSPATH')){
+	exit;
+}
+
+function weather_update(){
+	$ch = curl_init();
+	$header = array('HTTP_ACCEPT: application/atom+xml;version=1', 'Cookie: foo=bar\r\n', 'User-Agent: Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) Version/4.0.4 Mobile/7B334b Safari/531.21.102011-10-16 20:23:10\r\n');
+
+	// curl_setopt($ch, CURLOPT_URL, "https://api.weather.gov/alerts/active/zone/AKZ201"); # URL to post to
+	curl_setopt($ch, CURLOPT_URL, "https://api.open-meteo.com/v1/forecast?latitude=10.3088&longitude=123.8958&daily=weather_code&timezone=Asia%2FSingapore&forecast_days=1"); # URL to post to
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1 ); # return into a variable
+	curl_setopt($ch, CURLOPT_HTTPHEADER, $header ); # custom headers, see above
+
+	$content = 'WEATHER UPDATE: ';
+	$result = curl_exec( $ch ); # run!
+	$result = json_decode($result);
+
+	$weather_code = -1;
+
+	if(!empty($result->daily->weather_code[0])) {
+		$weather_code = $result->daily->weather_code[0];
+	}
+
+	//widget for weather here...
+	$widget = '<script src="https://static.elfsight.com/platform/platform.js" async></script><div class="elfsight-app-9b68c1a6-b340-420e-bc99-82dcba817b1a" data-elfsight-app-lazy></div>';
+	$content .= $widget;
+
+	if($weather_code == -1) {
+		$content .= 'not able to get weather.';
+	}else {
+		//do coding here depending on the weather...
+
+		if($weather_code >= 0 && $weather_code <= 2) {
+			$content .= $weather_code.'sunny';
+			//items display code for sunny weather...
+		}else if($weather_code >= 3 && $weather_code <= 5) {
+			$content .= 'cloudy/light rain recommended products display here...';
+			//items display code for foggy weather...
+		}else if($weather_code >= 20 && $weather_code <= 29) {
+			$content .= 'rainy recommended products display here...';
+			//items display code for rainy/stormy weather...
+		}else if($weather_code >= 30 && $weather_code <= 35) {
+			$content .= 'sandstorm recommended products display here...';
+			//items display code for sandstorm weather...
+		}else if($weather_code >= 36 && $weather_code <= 39) {
+			$content .= 'snowwy recommended products display here...';
+			//items display code for snowwy weather...
+		}
+
+		//and so on...
+	}
+	curl_close($ch);
+
+	return $content;
+}
+add_shortcode('weather_alert', 'weather_update');
+
+//use weather_alert shortcode in page...
+?>
