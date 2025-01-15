@@ -4,10 +4,16 @@
     <style>
         /* Slideshow container */
         .slideshow-container {
-            max-width: 100%;
+            
+			
             position: relative;
             margin: auto;
         }
+		.slideshow-container img {
+			max-width: 100%;
+			width: 100% !important;
+			height: 400px !important;
+		}
 
         /* Hide the images by default */
         .mySlides {
@@ -115,7 +121,7 @@
 	<?php foreach ($images as $k => $slide) { ?>
     	<div class="mySlides fade">
             <div class="numbertext"> <?=$k+1?> / <?=count($images)?></div>
-            <img src="<?=$slide?>" style="max-width: 100%;height: auto;">
+            <img src="<?=$slide?>">
             <!-- <div class="text">Caption Text</div> -->
         </div>
 	<?php }	?>
@@ -127,9 +133,9 @@
 
 <!-- The dots/circles -->
 <div style="text-align:center">
-    <span class="dot" onclick="currentSlide(1)"></span>
-    <span class="dot" onclick="currentSlide(2)"></span>
-    <span class="dot" onclick="currentSlide(3)"></span>
+	<?php foreach ($images as $k => $slide) { ?>
+    	<span class="dot" onclick="currentSlide(<?=$k+1?>)"></span>
+	<?php }	?>
 </div>
 
 <script>
